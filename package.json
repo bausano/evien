@@ -1,0 +1,19 @@
+{
+  "name": "evien",
+  "version": "1.0.0",
+  "description": "A personal assistantt bot.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bausano/evien.git"
+  },
+  "author": "Michael Bausano",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bausano/evien/issues"
+  },
+  "homepage": "https://github.com/bausano/evien#readme"
+}
