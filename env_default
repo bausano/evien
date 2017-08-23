@@ -1,6 +1,9 @@
 # Fill the settings and
 # rename this file to .env
 
+# Core
+PORT=8888
+
 # Logger settings, for more information see Logger wiki
 LOGGER_ENABLED=true
 LOGGER_LEVEL=note
