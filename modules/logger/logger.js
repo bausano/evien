@@ -1,3 +1,10 @@
+/*
+ * Module for code tracking and debugging
+ *
+ * @wiki
+ */
+
+// Loads Logger config file
 const config = require('./../../config/modules/logger.js').logger
 
 const Logger = {
@@ -48,7 +55,7 @@ const Logger = {
     let date = (new Date()).toUTCString()
     date = /, (.*?) GMT/g.exec(date)[1]
 
-    console.log('\x1b[1m%s: \x1b%s\x1b[0m', date, type.title)
+    console.log('\x1b[1m%s \x1b%s\x1b[0m', date, type.title)
 
     if(msg !== undefined) {
       console.log(msg)
