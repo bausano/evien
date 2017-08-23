@@ -10,5 +10,6 @@
  }
 
 const logger = require('./modules/logger.js')
+const core = require('./modules/core.js')
 
-module.exports = Object.assign({}, logger)
+module.exports = Object.assign({}, core, logger)
