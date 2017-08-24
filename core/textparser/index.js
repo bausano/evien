@@ -30,14 +30,14 @@ function parse(msg)
   route.module = moduleParser.get(split.cmds)
 
   if (route.module === false) {
-    return Logger.warn('module-parser could not match a message with any module.')
+    return Logger.warn('module-parser could not match your message with any module.')
   }
 
   // TODO: send route only
   route.fnc = functionParser.get(commands[route.module].functions, split.cmds)
 
   if (route.fnc === false) {
-    return Logger.warn('function-parser could not match a message with any function.')
+    return Logger.warn('function-parser could not match your message with any function.')
   }
 
   // TODO: send route only

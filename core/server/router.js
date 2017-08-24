@@ -15,9 +15,13 @@ router.get('/', (req, res) => {
 })
 
 router.post('/parser', (req, res) => {
-  Textparser(req.body.message)
+  var query = Textparser(req.body.message)
 
-  res.sendStatus(200)
+  if (query) {
+    res.sendStatus(200)
+  } else {
+    res.sendStatus(400)
+  }
 })
 
 // TODO: Add admin routes
