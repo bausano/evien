@@ -1,10 +1,15 @@
 const Logger = require('../../modules/logger')
-
 const commands = require('../../modules/collector')
+
+// Process:
+const rawMessageParser = require('./raw-message-parser')
+// -->
+const moduleParser = require('./module-parser')
+// -->
+const functionParser = require('./function-parser')
 
 var Textparser = {
   _msg: {},
-  _keyword_counter: {},
 
   parse: (msg) => {
     // NOTE: consider lodash
@@ -12,47 +17,28 @@ var Textparser = {
       return Logger.error('Textparser error: message is not a string')
     }
 
-    Textparser._msg.raw = msg
+    let split = rawMessageParser.get(msg)
 
-    Textparser._msgSplit()
-
-    Textparser._keywords()
-  },
-
-  _msgSplit: () => {
-    let split = Textparser._msg.raw.split('"')
-
-    let cmds = [],
-        args = []
-
-    for (let i = 0; i < split.length; i++) {
-      if(i % 2 === 0) {
-        cmds.push(split[i])
-      } else {
-        args.push(split[i])
-      }
+    Textparser._msg = {
+      raw: msg,
+      cmds: split.cmds,
+      args: split.args
     }
 
-    Textparser._msg.cmds = cmds
+    let route = {}
 
-    Textparser._msg.args = args
-  },
+    route.module = moduleParser.get(split.cmds)
 
-  _keywords: () => {
-    var formated = Textparser._msg.cmds.join('%arg')
-
-    for (key in commands) {
-      let module = commands[key]
-
-      Textparser._keyword_counter[key] = 0
-
-      module.keywords.forEach((keyword) => {
-        // NOTE: consider lodash
-        if (formated.indexOf(keyword) !== -1) {
-          Textparser._keyword_counter[key]++
-        }
-      })
+    if (route.module === false) {
+      return Logger.warn('Module parser could not match a message with any module.')
     }
+
+    route.fnc = functionParser.get(commands[route.module].functions, split.cmds)
+
+    Logger.note({
+      module: route.module,
+      fnc: route.fnc
+    })
   }
 }
 
