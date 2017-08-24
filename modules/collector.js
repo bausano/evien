@@ -2,6 +2,7 @@ const Logger = require('./logger')
 
 // Register new modules here
 const modules = [
+  'todolist'
 ]
 
 var commands = {}
