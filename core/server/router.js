@@ -2,7 +2,7 @@
  * All application endpoints converge in this file
  */
 const express = require('express')
-const parser = require('../textparser')
+const Textparser = require('../textparser')
 const Logger = require('../../modules/logger')
 
 const router = express.Router()
@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 router.post('/parser', (req, res) => {
   Logger.note('A POST query to /parser')
 
-  console.log(req.body)
+  Textparser.parse(req.body.message)
 
   res.sendStatus(200)
 })
