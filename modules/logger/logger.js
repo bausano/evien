@@ -21,6 +21,10 @@ const Logger = {
       title: '[32mSuccess',
       level: 2
     },
+    warn: {
+      title: '[33mWarning',
+      level: 2
+    },
     note: {
       title: '[34mNote',
       level: 1
@@ -41,6 +45,12 @@ const Logger = {
 
   note: (msg) => {
     Logger._validate(Logger._types.note, msg)
+  },
+
+  warn: (msg) => {
+    Logger._validate(Logger._types.warn, msg)
+
+    return false
   },
 
   // Checks config allowed level and logs allowed level.
@@ -78,7 +88,7 @@ const Logger = {
     // NOTE: consider lodash
     // IF msg is of string or number, prints one line.
     if (typeof msg === 'string' || msg instanceof String || typeof msg === 'number') {
-      console.log('|  ' + msg)
+      console.log(msg)
 
       return true
     }
@@ -87,7 +97,7 @@ const Logger = {
     for (key in msg) {
       console.log('|  \x1b[1m%s\x1b[0m', key)
 
-      console.log('|    ' + msg[key])
+      console.log(msg[key])
     }
 
     return true
