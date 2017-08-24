@@ -3,6 +3,7 @@
  * their logic will differ eventually in the future
  * so there is no point in exporting similar code to one function.
  */
+const _ = require('lodash/core')
 const Logger = require('../../modules/logger')
 
 var functionParser = {
@@ -19,7 +20,7 @@ var functionParser = {
   },
 
   _sortByKeywords: (fncs, msg) => {
-    const formated = msg.join('%arg')
+    const formated = msg.join('%arg').toLowerCase()
 
     var keyword_counter = {}
 
@@ -29,8 +30,10 @@ var functionParser = {
       keyword_counter[key] = 0
 
       fnc.keywords.forEach((keyword) => {
-        if (formated.indexOf(keyword) !== -1) {
+        if (_.isString(keyword) && formated.indexOf(keyword) !== -1) {
           keyword_counter[key]++
+        } else if (formated.indexOf(keyword.word) !== -1) {
+          keyword_counter[key] += keyword.bonus
         }
       })
     }

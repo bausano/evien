@@ -15,9 +15,7 @@ router.get('/', (req, res) => {
 })
 
 router.post('/parser', (req, res) => {
-  Logger.note('A POST query to /parser')
-
-  Textparser.parse(req.body.message)
+  Textparser(req.body.message)
 
   res.sendStatus(200)
 })

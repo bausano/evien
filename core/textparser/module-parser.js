@@ -20,7 +20,7 @@ var moduleParser = {
   },
 
   _sortByKeywords: (msg) => {
-    const formated = msg.join('%arg')
+    const formated = msg.join('%arg').toLowerCase()
 
     var keyword_counter = {}
 
