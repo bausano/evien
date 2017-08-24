@@ -4,7 +4,7 @@
   "description": "A personal assistant bot.",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha '/**/*.spec.js'",
+    "test": "NODE_ENV=test mocha test/setup.spec.js '**/*.spec.js'",
     "start": "NODE_ENV=development node app.js"
   },
   "repository": {
