@@ -1,12 +1,16 @@
-const Todolist = require('./index')
+const callback = require('./index')
 
 const commands = {
+  callback: callback,
   keywords: [
     'todo', 'to do', 'i have to', 'i should do', 'list', 'todoist', 'task', 'to-do'
   ],
   functions: {
     add: {
-      keywords: ['add', 'task', 'save'],
+      keywords: [
+        {word: 'add', bonus: 3},
+        {word: 'save',bonus: 2}
+      ],
       arguments: {
         title: {
           required: true,
@@ -20,20 +24,33 @@ const commands = {
           required: false,
           keywords: ['tag', 'label']
         }
-      },
-      cb: Todolist.add
+      }
     },
     finish: {
-      keywords: ['completed', 'finished', 'done']
+      keywords: [
+        {word: 'completed', bonus: 2},
+        {word: 'finished', bonus: 2},
+        {word: 'done', bonus: 2}
+      ]
     },
     printAll: {
-      keywords: ['all', 'tag', 'tagged']
+      keywords: [
+        {word: 'all', bonus: 3},
+        'tag'
+      ]
     },
     count: {
-      keywords: ['many', 'how many', 'else', 'any']
+      keywords: [
+        {word: 'many', bonus: 2},
+        'else', 'any', '?', 'are there'
+      ],
+      arguments: {}
     },
     random: {
-      keywords: ['one', 'random']
+      keywords: [
+        'one',
+        {word: 'random', bonus: 3}
+      ]
     }
   }
 }

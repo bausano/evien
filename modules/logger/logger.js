@@ -3,6 +3,7 @@
  *
  * @wiki https://github.com/bausano/evien/wiki/Logger
  */
+const _ = require('lodash/core')
 
 // Loads Logger config file.
 const config = require('../../config').logger
@@ -85,9 +86,8 @@ const Logger = {
       return false
     }
 
-    // NOTE: consider lodash
     // IF msg is of string or number, prints one line.
-    if (typeof msg === 'string' || msg instanceof String || typeof msg === 'number') {
+    if (_.isString(msg) || _.isNumber(msg)) {
       console.log(msg)
 
       return true

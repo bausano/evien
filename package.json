@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "NODE_ENV=test mocha test/setup.spec.js '**/*.spec.js'",
-    "start": "NODE_ENV=development node app.js"
+    "start": "NODE_ENV=development node app.js",
+    "dev": "NODE_ENV=development nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.15.4",
     "joi": "^10.6.0",
+    "lodash": "^4.17.4",
     "mocha": "^3.5.0",
     "mongodb": "^2.2.31",
     "passport": "^0.4.0",

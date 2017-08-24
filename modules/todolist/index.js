@@ -1,6 +1,9 @@
 const Logger = require('../logger')
 
-function add(title, description, tag = false)
-{
-  Logger.note('Todolist: add function called')
+var Todolist = {
+  call: (fnc, args) => {
+    Logger.success({method: fnc, parameters: args})
+  }
 }
+
+module.exports = Todolist.call
