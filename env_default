@@ -7,3 +7,9 @@ PORT=8888
 # Logger settings, for more information see Logger wiki
 LOGGER_ENABLED=true
 LOGGER_LEVEL=note
+
+# Database connection via MongoDB
+MONGO_SERVER=
+MONGO_DB=
+MONGO_USER=
+MONGO_PASSWORD=

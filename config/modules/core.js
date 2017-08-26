@@ -1,7 +1,11 @@
 const Joi = require('joi')
 
 const core_scheme = Joi.object({
-  PORT: Joi.number().integer()
+  PORT: Joi.number().integer(),
+  MONGO_SERVER: Joi.string(),
+  MONGO_DB: Joi.string(),
+  MONGO_USER: Joi.string(),
+  MONGO_PASSWORD: Joi.string()
 }).unknown()
   .required()
 
@@ -13,7 +17,13 @@ if (error) {
 
 const config = {
   core: {
-    port: vars.PORT
+    port: vars.PORT,
+    mongo: {
+      server: vars.MONGO_SERVER,
+      db: vars.MONGO_DB,
+      user: vars.MONGO_USER,
+      password: vars.MONGO_PASSWORD
+    }
   }
 }
 
