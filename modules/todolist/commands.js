@@ -9,7 +9,7 @@ const commands = {
     add: {
       keywords: [
         {word: 'add', bonus: 3},
-        {word: 'save',bonus: 2}
+        {word: 'save', bonus: 2}
       ],
       arguments: {
         title: {
@@ -26,18 +26,37 @@ const commands = {
         }
       }
     },
+    detail: {
+      keywords: [
+        {word: 'detail', bonus: 3},
+        'tell', 'about', 'know'
+      ],
+      arguments: {
+        title: {
+          required: true,
+          keywords: ['title', 'name']
+        }
+      }
+    },
     finish: {
       keywords: [
         {word: 'completed', bonus: 2},
         {word: 'finished', bonus: 2},
         {word: 'done', bonus: 2}
-      ]
+      ],
+      arguments: {}
     },
     printAll: {
       keywords: [
         {word: 'all', bonus: 3},
         'tag'
-      ]
+      ],
+      arguments: {
+        tag: {
+          required: false,
+          keywords: ['tag', 'label']
+        }
+      }
     },
     count: {
       keywords: [
@@ -50,7 +69,17 @@ const commands = {
       keywords: [
         'one',
         {word: 'random', bonus: 3}
-      ]
+      ],
+      arguments: {}
+    },
+    remove: {
+      keywords: [
+        {word: 'remove', bonus: 2},
+        {word: 'delete', bonus: 2},
+        ['forget']
+      ],
+      arguments: {},
+      approval: true
     }
   }
 }
