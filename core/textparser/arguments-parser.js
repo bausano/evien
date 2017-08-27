@@ -1,15 +1,26 @@
 /*
- * At the moment arguments-parser shares some logic with function-parse.
- * tHowever their logic will differ eventually in the future
- * so there is no point in exporting similar code to one function.
+ * @file    /core/textparser/arguments-parser.js
+ * @version 1.0
  */
 const Logger = require('../../modules/logger')
+const KeywordsParser = require('./helpers/keywords')
 
 var argumentsParser = {
+  /*
+   * @param   commands  Has to contain keywords that holds an array of either
+   *                    strings or Objects with word and bonus property.
+   * @param   msg       A product of raw-message helper.
+   *
+   * @return  Object with a key - value pairs where key is the name of a
+   *          parameter.
+   */
   get: (commands, msg) => {
     argumentsParser.commands = commands
 
-    if (Object.keys(commands).length === 0) {
+    let keys = Object.keys(commands)
+
+    // If function has no parameters, return empty object.
+    if (keys.length === 0) {
       return {}
     }
 
@@ -17,61 +28,81 @@ var argumentsParser = {
   },
 
   _searchForArgs: (msg) => {
-    const cmds = msg.cmds
-    const args = msg.args
-
     var couples = {}
 
-    for (let key in cmds) {
-      if (args[key] === undefined) {
+    for (let key in msg.cmds) {
+      // If there is no argument to bind, abort.
+      if (msg.args[key] === undefined) {
         break
       }
 
-      let name = argumentsParser._getArg(cmds[key])
+      let name = argumentsParser._getArg(msg.cmds[key])
 
       if (name !== false) {
-        couples[name] = args[key]
+        couples[name] = msg.args[key]
       }
     }
 
-    return argumentsParser._checkReqired(couples)
+    // If parser did not match any pairs,
+    if (Object.keys(couples).length === 0) {
+      // then tries to guess one.
+      couples = argumentsParser._omitted(msg)
+    }
+
+    // Checks if all required arguments have value.
+    return argumentsParser._checkRequired(couples)
   },
 
+  /*
+   * @param   str   Part of a msg.cmd before argument in the brackets.
+   *
+   * @return  An argument key string.
+   */
   _getArg: (str) => {
     str = argumentsParser._trimString(str).toLowerCase()
 
-    var commands = argumentsParser.commands
+    let args = KeywordsParser(argumentsParser.commands, new Array(str)),
+        arg = args.sorted[0]
 
-    var keyword_counter = {}
-
-    for (let key in commands) {
-      let arg = commands[key]
-
-      keyword_counter[key] = 0
-
-      arg.keywords.forEach((keyword) => {
-        if (str.indexOf(keyword) !== -1) {
-          keyword_counter[key]++
-        }
-      })
-    }
-
-    let arg = Object.keys(keyword_counter).sort((a,b) => {
-      return keyword_counter[b]-keyword_counter[a]
-    })[0]
-
-    if (keyword_counter[arg] === 0) {
+    if (args.counter[arg] === 0) {
       return false
     }
 
     return arg
   },
 
-  _checkReqired: (couples) => {
-    let commands = argumentsParser.commands
+  // TODO: This function can be merged with _checkRequired.
+  _omitted: (msg) => {
+    const commands = argumentsParser.commands
+
+    var argument = new Object()
 
     for (let key in commands) {
+      // Saves key strings of arguments.
+      var def = key
+
+      // If there is a required argument,
+      if (commands[key].required) {
+        // then returns pair of the argument key with our unrecognized value.
+        argument[key] = msg.args[0]
+
+        return argument
+      }
+    }
+
+    // If there is no required argument, returns pair of the last
+    // argument found with our unrecognized value.
+    // TODO: Evien asks which argument does the value belong to.
+    return argument[def] = msg.args[0]
+  },
+
+  _checkRequired: (couples) => {
+    const commands = argumentsParser.commands
+
+    for (let key in commands) {
+      // If the argument is required, but not found in the message,
       if (commands[key].required && couples[key] === undefined) {
+        // then argument-parser returns false.
         couples = false
 
         break
@@ -81,9 +112,12 @@ var argumentsParser = {
     return couples
   },
 
+  /*
+   * @return  Last 4 words of a string.
+   */
   _trimString: (str) => {
     return str.split(' ').reverse().slice(0, 5).reverse().join(' ')
   }
 }
 
-module.exports = {get: argumentsParser.get}
+module.exports = argumentsParser.get

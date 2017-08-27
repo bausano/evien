@@ -1,49 +1,30 @@
 /*
- * At the moment function-parse shares logic with module-parser, but
- * their logic will differ eventually in the future
- * so there is no point in exporting similar code to one function.
+ * @file    /core/textparser/function-parser.js
+ * @version 1.0
  */
-const _ = require('lodash/core')
-const Logger = require('../../modules/logger')
+
+const KeywordsParser = require('./helpers/keywords')
 
 var functionParser = {
+  /*
+   * @param   commands  See keywords helper.
+   * @param   msg       See keywords helper.
+   *
+   * @return  String name of a function with most keywords matched
+   *          or false if no match has been found.
+   */
   get: (commands, msg) => {
-    let fncs = functionParser._sortByKeywords(commands, msg)
+    let fncs = KeywordsParser(commands, msg)
 
-    if(functionParser._counter[fncs[0]] === 0) {
+    // If no match has been found, abort.
+    if(fncs.counter[fncs.sorted[0]] === 0) {
       return false
     }
 
     // TODO: If two functions keyword counter equals, evien asks user to be more specific
 
-    return fncs[0]
-  },
-
-  _sortByKeywords: (fncs, msg) => {
-    const formated = msg.join('%arg').toLowerCase()
-
-    var keyword_counter = {}
-
-    for (key in fncs) {
-      let fnc = fncs[key]
-
-      keyword_counter[key] = 0
-
-      fnc.keywords.forEach((keyword) => {
-        if (_.isString(keyword) && formated.indexOf(keyword) !== -1) {
-          keyword_counter[key]++
-        } else if (formated.indexOf(keyword.word) !== -1) {
-          keyword_counter[key] += keyword.bonus
-        }
-      })
-    }
-
-    functionParser._counter = keyword_counter
-
-    return Object.keys(keyword_counter).sort((a,b) => {
-      return keyword_counter[b]-keyword_counter[a]
-    })
+    return fncs.sorted[0]
   }
 }
 
-module.exports = {get: functionParser.get}
+module.exports = functionParser.get
