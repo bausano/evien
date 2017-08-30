@@ -17,12 +17,13 @@ const functionParser = require('./function-parser')
 const argumentsParser = require('./arguments-parser')
 
 /*
- * @param   msg   A raw message sent from console, SMS or any other
- *                input stream.
+ * @param   msg    A raw message sent from console, SMS or any other
+ *                 input stream.
+ *          node   Instance of last node stored in database.
  *
  * @return  Boolean of message status.
  */
-function parse(msg)
+function parse(msg, node)
 {
   if (!_.isString(msg)) {
     return Logger.error('Textparser error: message is not a string.')
@@ -38,7 +39,7 @@ function parse(msg)
 
   var route = {}
 
-  route.module = moduleParser(commands, split.cmds)
+  route.module = moduleParser(commands, split.cmds, node.prev)
 
   if (route.module === false) {
     return Logger.warn('module-parser could not match your message with any module.')

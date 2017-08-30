@@ -10,7 +10,7 @@ describe('Module parser', () => {
       keywords: [{word: 'todo', bonus: 3}]
     },
     alarm: {
-      keywords: ['alarm', 'remind']
+      keywords: ['alarm', 'remind', 'finchley']
     }
   }
 
@@ -28,5 +28,15 @@ describe('Module parser', () => {
     let result = moduleParser(mods, msg.cmds)
 
     expect(result).to.be.false
+  })
+
+  it('guesses module based on previous node', () => {
+    let msg = rawMessage('Evien, remind me to add alarm todo of finchley.')
+
+    let prev = {module: 'alarm'}
+
+    let result = moduleParser(mods, msg.cmds, prev)
+
+    expect(result).to.equal('alarm')
   })
 })

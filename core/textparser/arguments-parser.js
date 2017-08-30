@@ -3,7 +3,7 @@
  * @version 1.0
  */
 const Logger = require('../../modules/logger')
-const KeywordsParser = require('./helpers/keywords')
+const KeywordsHelper = require('./helpers/keywords')
 
 var argumentsParser = {
   /*
@@ -61,7 +61,7 @@ var argumentsParser = {
   _getArg: (str) => {
     str = argumentsParser._trimString(str).toLowerCase()
 
-    let args = KeywordsParser(argumentsParser.commands, new Array(str)),
+    let args = KeywordsHelper(argumentsParser.commands, new Array(str)),
         arg = args.sorted[0]
 
     if (args.counter[arg] === 0) {

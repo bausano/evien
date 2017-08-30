@@ -3,7 +3,7 @@
  * @version 1.0
  */
 
-const KeywordsParser = require('./helpers/keywords')
+const KeywordsHelper = require('./helpers/keywords')
 
 var functionParser = {
   /*
@@ -14,7 +14,7 @@ var functionParser = {
    *          or false if no match has been found.
    */
   get: (commands, msg) => {
-    let fncs = KeywordsParser(commands, msg)
+    let fncs = KeywordsHelper(commands, msg)
 
     // If no match has been found, abort.
     if(fncs.counter[fncs.sorted[0]] === 0) {
