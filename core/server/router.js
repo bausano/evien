@@ -2,8 +2,10 @@
  * All application endpoints converge in this file
  */
 const express = require('express')
+
 const Textparser = require('../textparser')
 const Logger = require('../../modules/logger')
+const Node = require('../../models/core/node')
 
 const router = express.Router()
 
@@ -15,13 +17,27 @@ router.get('/', (req, res) => {
 })
 
 router.post('/parser', (req, res) => {
-  var query = Textparser(req.body.message)
+  Node.getLast({
+    mins: 5,
+    source: req.body.from
+  }, (last) => {
+    var params = {source: req.body.from, module: 'todolist'}
 
-  if (query) {
-    res.sendStatus(200)
-  } else {
-    res.sendStatus(400)
-  }
+    if (last !== null) {
+      params.prev = last._id
+    }
+
+    Node.create(params).then((node) => {
+      node.populate({
+        path: 'prev',
+        select: 'module'
+      }, () => {
+        Textparser(req.body.message, node)
+      })
+    })
+  })
+
+  res.sendStatus(200)
 })
 
 // TODO: Add admin routes
