@@ -21,17 +21,25 @@ const Node = mongoose.model('Node', NodeSchema)
  */
 function create(params)
 {
-  let node = new Node(params)
+ let node = new Node(params)
 
-  return node.save(_errCallBack)
+ return node.save(_errCallBack)
 }
 
+/*
+ * @param   ids   Can be either array of string IDs or string ID.
+ *                Default value 'all' selects all notes.
+ *          cb    Callback function.
+ *
+ * @return  If cb is a function, calls the result of the query on Callback
+ *          and returns null, otherwise returns query,
+ *          that can be execuded later on.
+ */
 function read(ids = 'all', cb = false)
 {
   let where = {}
 
   if (_.isString(ids) && ids !== 'all') {
-    // NOTE: Consider ids = [ids]
     where = {'_id': mongoose.Types.ObjectId(ids)}
   }
 
@@ -45,47 +53,71 @@ function read(ids = 'all', cb = false)
     where = {'_id': {$in: typed}}
   }
 
-  let query = Node.find(where).populate('prev')
+  let query = Node.find(where).populate('prev').populate('next')
 
   return _exec(query, cb)
 }
 
+/*
+ * @param   id      String ID of a Node to update.
+ * @param   params  Params should follow schema.
+ *
+ * @return  Promise object
+ */
 function update(id, params)
 {
-  params.updated = new Date()
-
   return Node.update(
     {'_id': mongoose.Types.ObjectId(id)},
     params
   )
 }
 
+/*
+ * @param   where   Params for where clausule.
+ *                  {
+ *                    mins:   Number
+ *                    source: String
+ *                  }
+ * @param   cb      Callback function.
+ *
+ * @return  If cb is a function, calls the result of the query on Callback
+ *          and returns null, otherwise returns query,
+ *          that can be execuded later on.
+ */
 function getLast(where, cb = false)
 {
-  // TODO: Where validation
+  if (!_.isNumber(where.mins) || !_.isString(where.source)) {
+    throw new Exception('Missing or incorrect arguments.')
+  }
+
   let minutes = new Date(new Date() - where.mins*60*1000)
 
   let query = Node.
     findOne().
     populate('prev', 'updated').
     where('source').equals(where.source).
+    // Where Node has been updated in last {where.mins} minutes.
     where('updated').gte(minutes).
     sort('-updated')
 
   return _exec(query, cb)
 }
 
-function _exec(query, cb)
+function _exec(query, cb = false)
 {
+  // If callback function is not false,
   if (cb) {
+    // then executes query and
     query.exec((err, node) => {
       _errCallBack(err)
-
+      // calls the callback on result.
       cb(node)
     })
 
     return null
   } else {
+    // Else returns query that can be executed
+    // via  .exec().
     return query
   }
 }
