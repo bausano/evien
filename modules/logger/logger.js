@@ -1,7 +1,9 @@
 /*
  * Module for code tracking and debugging
  *
- * @wiki https://github.com/bausano/evien/wiki/Logger
+ * @wiki    https://github.com/bausano/evien/wiki/Logger
+ * @file    /modules/logger/logger.js
+ * @version 1.0
  */
 const _ = require('lodash/core')
 
@@ -86,14 +88,14 @@ const Logger = {
       return false
     }
 
-    // IF msg is of string or number, prints one line.
+    // If msg is of string or number, prints one line.
     if (_.isString(msg) || _.isNumber(msg)) {
       console.log(msg)
 
       return true
     }
 
-    // ELSE prints msg as an obj or array.
+    // Else prints msg as an obj or array.
     for (key in msg) {
       console.log('|  \x1b[1m%s\x1b[0m', key)
 
