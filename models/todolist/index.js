@@ -31,8 +31,10 @@ function detail(parameters)
       ])
     }
 
-    Logger.success(JSON.stringify(match))
+    //Logger.success(JSON.stringify(match))
   })
+
+  return true
 }
 
 module.exports = {add: add, detail: detail}
