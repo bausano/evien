@@ -7,16 +7,13 @@ function add(parameters)
 
   new_task.save((err) => {
     if (err) {
-      return Logger.error([
-        'There was an error saving your task!',
-        err
-      ])
+      // TODO: Duplicate title E11000
+      Logger.error(err.code)
+      return err.code
     }
 
     Logger.success('Task successfully saved!')
   })
-
-  return true
 }
 
 function detail(parameters)
