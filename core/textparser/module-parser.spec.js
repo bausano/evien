@@ -1,11 +1,12 @@
 const expect = require('chai').expect
+const proxyquire =  require('proxyquire')
+const rawMessage = require('./helpers/raw-message')
 
-describe('Module parser', () => {
-  const rawMessage = require('./helpers/raw-message')
-
-  const moduleParser = require('./module-parser')
-
-  const mods = {
+const moduleParser = proxyquire('./module-parser', {
+  './function-parser': (route, message, node) => {
+    return route.module
+  },
+  '../../modules/collector': {
     todo: {
       keywords: [{word: 'todo', bonus: 3}]
     },
@@ -13,29 +14,35 @@ describe('Module parser', () => {
       keywords: ['alarm', 'remind', 'finchley']
     }
   }
+})
 
+describe('Module parser', () => {
   it('returns a module name with the most keywords matched', () => {
-    let msg = rawMessage('Remind me to add alarm to my todolist.')
+    let message = rawMessage('Remind me to add alarm to my todolist.')
 
-    let result = moduleParser(mods, msg.cmds)
+    let node = {prev: {module: undefined}}
+
+    let result = moduleParser(message, node)
 
     expect(result).to.equal('todo')
   })
 
   it('returns false if no keywords were matched', () => {
-    let msg = rawMessage('This is a message')
+    let message = rawMessage('This is a message')
 
-    let result = moduleParser(mods, msg.cmds)
+    let node = {prev: {module: undefined}}
 
-    expect(result).to.be.false
+    let result = moduleParser(message, node)
+
+    expect(result).to.equal(404)
   })
 
   it('guesses module based on previous node', () => {
-    let msg = rawMessage('Evien, remind me to add alarm todo of finchley.')
+    let message = rawMessage('Evien, remind me to add alarm todo of finchley.')
 
-    let prev = {module: 'alarm'}
+    let node = {prev: {module: 'alarm'}}
 
-    let result = moduleParser(mods, msg.cmds, prev)
+    let result = moduleParser(message, node)
 
     expect(result).to.equal('alarm')
   })

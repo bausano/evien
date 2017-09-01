@@ -1,123 +1,137 @@
-/*
- * @file    /core/textparser/arguments-parser.js
- * @version 1.0
- */
-const Logger = require('../../modules/logger')
+const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
+const commands = require('../../modules/collector')
 
-var argumentsParser = {
-  /*
-   * @param   commands  Has to contain keywords that holds an array of either
-   *                    strings or Objects with word and bonus property.
-   * @param   msg       A product of raw-message helper.
-   *
-   * @return  Object with a key - value pairs where key is the name of a
-   *          parameter.
-   */
-  get: (commands, msg) => {
-    argumentsParser.commands = commands
+/*
+ * @param   route     Has property: module.
+ * @param   message   Has properties: raw, args, cmds.
+ * @param   node      See Node model schema.
+ *
+ * @return  On error returns error id, otherwise bubbles route object.
+ */
+function get(route, message, node)
+{
+  let cmds = commands[route.module].functions[route.fnc].arguments
 
-    let keys = Object.keys(commands)
+  let keys = Object.keys(cmds)
 
-    // If function has no parameters, return empty object.
-    if (keys.length === 0) {
-      return {}
+  // If function has no parameters, return empty object.
+  route.args = {}
+
+  if (keys.length > 0) {
+    route.args = _searchForArgs(cmds, message)
+  }
+
+  if (!_.isNumber(route.args)) {
+    return _dispatch(route, message, node)
+  } else {
+    if (route.args === 404) {
+      // TODO: No match found
     }
 
-    return argumentsParser._searchForArgs(msg)
-  },
-
-  _searchForArgs: (msg) => {
-    var couples = {}
-
-    for (let key in msg.cmds) {
-      // If there is no argument to bind, abort.
-      if (msg.args[key] === undefined) {
-        break
-      }
-
-      let name = argumentsParser._getArg(msg.cmds[key])
-
-      if (name !== false) {
-        couples[name] = msg.args[key]
-      }
+    if (route.args === 417) {
+      // TODO: Required argument can't be empty
     }
 
-    // If parser did not match any pairs,
-    if (Object.keys(couples).length === 0) {
-      // then tries to guess one.
-      couples = argumentsParser._omitted(msg)
-    }
-
-    // Checks if all required arguments have value.
-    return argumentsParser._checkRequired(couples)
-  },
-
-  /*
-   * @param   str   Part of a msg.cmd before argument in the brackets.
-   *
-   * @return  An argument key string.
-   */
-  _getArg: (str) => {
-    str = argumentsParser._trimString(str).toLowerCase()
-
-    let args = KeywordsHelper(argumentsParser.commands, new Array(str)),
-        arg = args.sorted[0]
-
-    if (args.counter[arg] === 0) {
-      return false
-    }
-
-    return arg
-  },
-
-  // TODO: This function can be merged with _checkRequired.
-  _omitted: (msg) => {
-    const commands = argumentsParser.commands
-
-    var argument = new Object()
-
-    for (let key in commands) {
-      // Saves key strings of arguments.
-      var def = key
-
-      // If there is a required argument,
-      if (commands[key].required) {
-        // then returns pair of the argument key with our unrecognized value.
-        argument[key] = msg.args[0]
-
-        return argument
-      }
-    }
-
-    // If there is no required argument, returns pair of the last
-    // argument found with our unrecognized value.
-    // TODO: Evien asks which argument does the value belong to.
-    return argument[def] = msg.args[0]
-  },
-
-  _checkRequired: (couples) => {
-    const commands = argumentsParser.commands
-
-    for (let key in commands) {
-      // If the argument is required, but not found in the message,
-      if (commands[key].required && couples[key] === undefined) {
-        // then argument-parser returns false.
-        couples = false
-
-        break
-      }
-    }
-
-    return couples
-  },
-
-  /*
-   * @return  Last 4 words of a string.
-   */
-  _trimString: (str) => {
-    return str.split(' ').reverse().slice(0, 5).reverse().join(' ')
+    return route.args
   }
 }
 
-module.exports = argumentsParser.get
+function _dispatch(route, message, node)
+{
+  let callback = commands[route.module].callback
+
+  // Calls the appropriate function in matched module with exported arguments.
+  callback(route.fnc, route.args)
+
+  return route
+}
+
+function _searchForArgs(cmds, msg)
+{
+  var couples = {}
+
+  for (let key in msg.cmds) {
+    // If there is no argument to bind, abort.
+    if (msg.args[key] === undefined) {
+      break
+    }
+
+    let name = _getArg(cmds, msg.cmds[key])
+
+    if (name !== 404) {
+      couples[name] = msg.args[key]
+    }
+  }
+
+  // If parser did not match any pairs,
+  if (Object.keys(couples).length === 0) {
+    // then tries to guess one.
+    couples = _omitted(cmds, msg)
+  }
+
+  return _checkRequired(cmds, couples)
+}
+
+/*
+ * @param   str   Part of a msg.cmd before argument in the brackets.
+ *
+ * @return  An argument key string.
+ */
+function _getArg(cmds, str)
+{
+  str = _trimString(str).toLowerCase()
+
+  let args = KeywordsHelper(cmds, new Array(str)),
+      arg = args.sorted[0]
+
+  if (args.counter[arg] === 0) {
+    return 404
+  }
+
+  return arg
+}
+
+// TODO: This function can be merged with _checkRequired.
+function _omitted(cmds, msg)
+{
+  var argument = new Object()
+
+  for (let key in cmds) {
+    var def = key
+
+    if (cmds[key].required) {
+      argument[key] = msg.args[0]
+
+      return argument
+    }
+  }
+
+  // If there is no required argument, returns pair of the last
+  // argument found with our unrecognized value.
+  // TODO: Evien asks which argument does the value belong to.
+  return argument[def] = msg.args[0]
+}
+
+function _checkRequired(cmds, couples)
+{
+  for (let key in cmds) {
+    if (cmds[key].required && couples[key] === undefined) {
+      couples = 417
+
+      break
+    }
+  }
+
+  return couples
+}
+
+/*
+ * @return  Last 4 words of a string.
+ */
+function _trimString(str)
+{
+  return str.split(' ').reverse().slice(0, 5).reverse().join(' ')
+}
+
+module.exports = get

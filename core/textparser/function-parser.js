@@ -1,30 +1,52 @@
-/*
- * @file    /core/textparser/function-parser.js
- * @version 1.0
- */
-
+const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
+const commands = require('../../modules/collector')
+const argumentsParser = require('./arguments-parser')
 
-var functionParser = {
-  /*
-   * @param   commands  See keywords helper.
-   * @param   msg       See keywords helper.
-   *
-   * @return  String name of a function with most keywords matched
-   *          or false if no match has been found.
-   */
-  get: (commands, msg) => {
-    let fncs = KeywordsHelper(commands, msg)
+/*
+ * @param   route     Has property: module.
+ * @param   message   Has properties: raw, args, cmds.
+ * @param   node      See Node model schema.
+ *
+ * @return  On error returns error id, otherwise bubbles route object.
+ */
+function get(route, message, node)
+{
+  let fnc = _find(route, message.cmds)
 
-    // If no match has been found, abort.
-    if(fncs.counter[fncs.sorted[0]] === 0) {
-      return false
+  if (_.isString(fnc)) {
+    route.fnc = fnc
+
+    return argumentsParser(route, message, node)
+  } else {
+    if (fnc === 404) {
+      // TODO: Reponse: module could not be matched.
+      console.log('functionParser: 404')
     }
 
-    // TODO: If two functions keyword counter equals, evien asks user to be more specific
+    if (fnc === 300) {
+      // TODO: If the above fails, Evien asks user to be more specific.
+      console.log('functionParser: 300')
+    }
 
-    return fncs.sorted[0]
+    return fnc
   }
 }
 
-module.exports = functionParser.get
+function _find(route, message)
+{
+  let fncs = KeywordsHelper(commands[route.module].functions, message),
+      counter = fncs.counter
+
+  if (counter[fncs.sorted[0]] === 0) {
+    return 404
+  }
+
+  if (counter[fncs.sorted[0]] === counter[fncs.sorted[1]]) {
+    return 300
+  }
+
+  return fncs.sorted[0]
+}
+
+module.exports = get

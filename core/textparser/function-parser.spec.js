@@ -1,32 +1,43 @@
 const expect = require('chai').expect
+const proxyquire =  require('proxyquire')
+const rawMessage = require('./helpers/raw-message')
 
-describe('Function parser', () => {
-  const rawMessage = require('./helpers/raw-message')
-
-  const functionParser = require('./function-parser')
-
-  const fncs = {
-    add: {
-      keywords: ['add', 'task']
-    },
-    remove: {
-      keywords: ['remove', 'task']
+const functionParser = proxyquire('./function-parser', {
+  './arguments-parser': (route, message, node) => {
+    return route.fnc
+  },
+  '../../modules/collector': {
+    module: {
+      functions: {
+        add: {
+          keywords: ['add', 'task']
+        },
+        remove: {
+          keywords: ['remove', 'task']
+        }
+      }
     }
   }
+})
 
+describe('Function parser', () => {
   it('returns a function name with the most keywords matched', () => {
-    let msg = rawMessage('Please remove a task of "#1".')
+    let message = rawMessage('Please remove a task of "#1".')
 
-    let result = functionParser(fncs, msg.cmds)
+    let route = {module: 'module'}
+
+    let result = functionParser(route, message, {})
 
     expect(result).to.equal('remove')
   })
 
   it('returns false if no keywords were matched', () => {
-    let msg = rawMessage('This is a message')
+    let message = rawMessage('This is a message')
 
-    let result = functionParser(fncs, msg.cmds)
+    let route = {module: 'module'}
 
-    expect(result).to.be.false
+    let result = functionParser(route, message, {})
+
+    expect(result).to.equal(404)
   })
 })

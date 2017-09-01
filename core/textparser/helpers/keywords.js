@@ -1,8 +1,3 @@
-/*
- * @file    /core/textparser/helpers/keywords.js
- * @version 1.0
- */
-
 const _ = require('lodash/core')
 
 /*
@@ -27,15 +22,9 @@ function sortByKeywords(cmds, msg)
     keyword_counter[key] = 0
 
     cmd.keywords.forEach((keyword) => {
-      // If the keyword is string and it is found in the message,
       if (_.isString(keyword) && formated.indexOf(keyword) !== -1) {
-        // then increments the occurence index.
         keyword_counter[key]++
-      }
-      // If the keyword is an object, get the word property and
-      // if word string is found in the message,
-      else if (formated.indexOf(keyword.word) !== -1) {
-        // then increments the occurence index by the bonus property.
+      } else if (formated.indexOf(keyword.word) !== -1) {
         keyword_counter[key] += keyword.bonus
       }
     })
@@ -44,7 +33,7 @@ function sortByKeywords(cmds, msg)
   // Sorts cmds from the higher occurence index to the lowest one
   // and returns them in an array.
   let sorted = Object.keys(keyword_counter).sort((a,b) => {
-    return keyword_counter[b]-keyword_counter[a]
+    return keyword_counter[b] - keyword_counter[a]
   })
 
   return {
