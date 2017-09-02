@@ -14,16 +14,16 @@ Up/down | `specified soon`
 ## Features
 - Web Interface
 - Facebook implementation
-- Spotify and Last.fm managing
+- Spotify and Last.fm manager
 - Budget manager
 - Idea sheet
+- Todo list
 - Calendar and reminder
 - Watch/read/listen later queue
 
 ## Used technologies and packages
 - Node
 - MongoDB
-- Docker
 - Mocha
 - Sockets
 
@@ -33,3 +33,4 @@ Up/down | `specified soon`
 - last.fm
 - WaniKani
 - Twilio
+- Twitter

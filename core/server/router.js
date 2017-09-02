@@ -1,18 +1,15 @@
 /*
- * All application endpoints converge in this file
+ * All application endpoints converge in this file.
  */
 const express = require('express')
 
 const Textparser = require('../textparser')
-const Logger = require('../../modules/logger')
 const Node = require('../../models/core/node')
 
 const router = express.Router()
 
-// TODO: Server status message
+// TODO: Server status message.
 router.get('/', (req, res) => {
-  Logger.note('A GET query to root.')
-
   res.send('Evien status: running')
 })
 
@@ -40,8 +37,8 @@ router.post('/parser', (req, res) => {
   res.sendStatus(200)
 })
 
-// TODO: Add admin routes
+// TODO: Add admin routes.
 
-// TODO: Add chat routes
+// TODO: Add chat routes.
 
 module.exports = router

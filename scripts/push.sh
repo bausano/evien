@@ -2,7 +2,7 @@
 output=$(npm test);
 
 if echo "$output" | grep -q "failing"; then
-    echo "Some of tests failed!";
+    echo "$output";
 else
   git push
 fi
