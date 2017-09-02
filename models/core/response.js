@@ -1,13 +1,39 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var Schema = mongoose.Schema
+const Schema = mongoose.Schema
 
-var ResponseSchema = Schema(
+const ResponseSchema = Schema(
   {
     node:     [{type: Schema.Types.ObjectId, ref: 'Node'}],
-    updated:  {type: Date, default: Date.now}
+    text:     {type: String, max: 1024},
+    type:     {type: String},
+    body:     {type: String},
     created:  {type: Date, default: Date.now}
   }
 )
 
-module.exports = mongoose.model('Response', ResponseSchema)
+const Response = mongoose.model('Response', ResponseSchema)
+
+/*
+ * @param   params  Params should follow schema.
+ *
+ * @return  Promise object
+ */
+function create(params)
+{
+ let response = new Response(params)
+
+ return response.save(_errCallBack)
+}
+
+function _errCallBack(err)
+{
+  if (err) {
+    Logger.error(err)
+  }
+}
+
+module.exports = {
+  model: Response,
+  create: create
+}

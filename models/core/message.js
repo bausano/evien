@@ -1,16 +1,39 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var Schema = mongoose.Schema
+const Schema = mongoose.Schema
 
-var MessageSchema = Schema(
+const MessageSchema = Schema(
   {
-    raw:      {type: String},
-    function: {type: String},
+    raw:      {type: String, max: 16384},
+    function: {type: String, max: 30},
     params:   {type: Schema.Types.Mixed},
     node:     [{type: Schema.Types.ObjectId, ref: 'Node'}],
-    updated:  {type: Date, default: Date.now}
     created:  {type: Date, default: Date.now}
   }
 )
 
-module.exports = mongoose.model('Message', MessageSchema)
+const Message = mongoose.model('Message', MessageSchema)
+
+/*
+ * @param   params  Params should follow schema.
+ *
+ * @return  Promise object
+ */
+function create(params)
+{
+ let message = new Message(params)
+
+ return message.save(_errCallBack)
+}
+
+function _errCallBack(err)
+{
+  if (err) {
+    Logger.error(err)
+  }
+}
+
+module.exports = {
+  model: Message,
+  create: create
+}

@@ -5,9 +5,11 @@ const Schema = mongoose.Schema
 
 const NodeSchema = Schema({
   source:   {type: String, required: true, max: 30},
+  module:   {type: String},
   prev:     {type: Schema.Types.ObjectId, ref: 'Node'},
   next:     {type: Schema.Types.ObjectId, ref: 'Node'},
-  module:   {type: String},
+  message:  [{type: Schema.Types.ObjectId, ref: 'Message'}],
+  response: [{type: Schema.Types.ObjectId, ref: 'Response'}],
   updated:  {type: Date, default: Date.now},
   created:  {type: Date, default: Date.now}
 })
@@ -53,7 +55,12 @@ function read(ids = 'all', cb = false)
     where = {'_id': {$in: typed}}
   }
 
-  let query = Node.find(where).populate('prev').populate('next')
+  let query = Node.
+    find(where).
+    populate('prev').
+    populate('next').
+    populate('message').
+    populate('response')
 
   return _exec(query, cb)
 }
