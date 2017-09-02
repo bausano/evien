@@ -6,6 +6,7 @@ const functionParser = proxyquire('./function-parser', {
   './arguments-parser': (route, message, node) => {
     return route.fnc
   },
+  '../stdout': {fails: () => {}},
   '../../modules/collector': {
     module: {
       functions: {
@@ -31,7 +32,7 @@ describe('Function parser', () => {
     expect(result).to.equal('remove')
   })
 
-  it('returns false if no keywords were matched', () => {
+  it('fails if no keywords were matched', () => {
     let message = rawMessage('This is a message')
 
     let route = {module: 'module'}

@@ -6,6 +6,7 @@ const moduleParser = proxyquire('./module-parser', {
   './function-parser': (route, message, node) => {
     return route.module
   },
+  '../stdout': {fails: () => {}},
   '../../modules/collector': {
     todo: {
       keywords: [{word: 'todo', bonus: 3}]
@@ -27,7 +28,7 @@ describe('Module parser', () => {
     expect(result).to.equal('todo')
   })
 
-  it('returns false if no keywords were matched', () => {
+  it('fails if no keywords were matched', () => {
     let message = rawMessage('This is a message')
 
     let node = {prev: {module: undefined}}

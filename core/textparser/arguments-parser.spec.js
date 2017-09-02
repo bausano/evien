@@ -5,6 +5,7 @@ const rawMessage = require('./helpers/raw-message')
 var spy = require('sinon').spy()
 
 const argumentsParser = proxyquire('./arguments-parser', {
+  '../stdout': {fails: () => {}},
   '../../modules/collector': {
     module: {
       callback: spy,

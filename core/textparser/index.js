@@ -1,13 +1,9 @@
-/*
- * @file    /core/textparser/index.js
- * @version 2.0
- */
-
 const _ = require('lodash/core')
-const Logger = require('../../modules/logger')
-const commands = require('../../modules/collector')
 const rawMessage = require('./helpers/raw-message')
 const moduleParser = require('./module-parser')
+const Evien = require('../stdout')
+const Message = require('../../models/core/message')
+const Node = require('../../models/core/node')
 
 /*
  * @param   msg    A raw message sent from console, SMS or any other
@@ -17,8 +13,10 @@ const moduleParser = require('./module-parser')
 function parse(msg, node)
 {
   if (!_.isString(msg)) {
-    // TODO: Textparser - message is not a string.
-    return Logger.error('Textparser: message is not a string.')
+    return Evien.fails({
+      node: node,
+      body: 'your message has to be text'
+    })
   }
 
   let split = rawMessage(msg)
@@ -29,7 +27,27 @@ function parse(msg, node)
     args: split.args
   }
 
-  moduleParser(message, node)
+  let route = moduleParser(message, node)
+
+  if (!_.isNumber(route)) {
+    saveMessage(message, route, node)
+  }
+}
+
+function saveMessage(message, route, node)
+{
+  let save = {
+    raw: message.raw,
+    function: route.fnc,
+    params: route.args,
+    node: node._id
+  }
+
+  Message.create(save).then((msg) => {
+    Node.update(node._id, {message: msg._id})
+  }).catch((err) => {
+    console.error(err)
+  })
 }
 
 module.exports = parse

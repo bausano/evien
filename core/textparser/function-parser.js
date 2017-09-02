@@ -2,6 +2,7 @@ const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
 const commands = require('../../modules/collector')
 const argumentsParser = require('./arguments-parser')
+const Evien = require('../stdout')
 
 /*
  * @param   route     Has property: module.
@@ -20,8 +21,10 @@ function get(route, message, node)
     return argumentsParser(route, message, node)
   } else {
     if (fnc === 404) {
-      // TODO: Reponse: module could not be matched.
-      console.log('functionParser: 404')
+      Evien.fails({
+        node: node,
+        body: 'i don\'t understand what should I do with ' + commands[route.module].beautify
+      })
     }
 
     if (fnc === 300) {

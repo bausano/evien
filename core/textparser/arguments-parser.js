@@ -1,6 +1,7 @@
 const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
 const commands = require('../../modules/collector')
+const Evien = require('../stdout')
 
 /*
  * @param   route     Has property: module.
@@ -26,11 +27,21 @@ function get(route, message, node)
     return _dispatch(route, message, node)
   } else {
     if (route.args === 404) {
-      // TODO: No match found
+      Evien.fails({
+        node: node,
+        body: 'i couldn\'t find or recognize the parameters when I tried to '
+        + commands[route.module].functions[route.fnc].beautify +
+        ' in ' + commands[route.module].beautify
+      })
     }
 
     if (route.args === 417) {
-      // TODO: Required argument can't be empty
+      Evien.fails({
+        node: node,
+        body: 'you are missing some important parameter, so I can\'t '
+        + commands[route.module].functions[route.fnc].beautify +
+        ' in ' + commands[route.module].beautify
+      })
     }
 
     return route.args
@@ -42,7 +53,7 @@ function _dispatch(route, message, node)
   let callback = commands[route.module].callback
 
   // Calls the appropriate function in matched module with exported arguments.
-  callback(route.fnc, route.args)
+  callback(node, route.fnc, route.args)
 
   return route
 }
@@ -107,10 +118,11 @@ function _omitted(cmds, msg)
     }
   }
 
-  // If there is no required argument, returns pair of the last
-  // argument found with our unrecognized value.
-  // TODO: Evien asks which argument does the value belong to.
-  return argument[def] = msg.args[0]
+  if (Object.keys(cmds).length === 1) {
+    return argument[def] = msg.args[0]
+  }
+
+  return 404
 }
 
 function _checkRequired(cmds, couples)
