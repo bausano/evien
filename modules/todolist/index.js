@@ -1,19 +1,17 @@
-const Logger = require('../logger')
 const Task = require('../../models/todolist')
+const Evien = require('../../core/stdout')
 
 var Todolist = {
-  call: (fnc, args) => {
-    Logger.success({method: fnc, parameters: args})
-
-    return Todolist[fnc](args)
+  call: (node, fnc, args) => {
+    return Todolist[fnc](node, args)
   },
 
-  add: (args) => {
-    return Task.add(args)
+  add: (node, args) => {
+    return Task.add(node, args)
   },
 
-  detail: (args) => {
-    return Task.detail(args)
+  detail: (node, args) => {
+    return Task.detail(node, args)
   }
 }
 

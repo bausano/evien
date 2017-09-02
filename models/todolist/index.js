@@ -1,22 +1,24 @@
 const Task = require('./task')
 const Logger = require('../../modules/logger')
+const Evien = require('../../core/stdout')
 
-function add(parameters)
+function add(node, parameters)
 {
   var new_task = new Task(parameters)
 
   new_task.save((err) => {
     if (err) {
-      // TODO: Duplicate title E11000
-      Logger.error(err.code)
-      return err.code
+      return Evien.fails({
+        node: node,
+        body: 'you can only have one Todolist task called ' + parameters.title
+      })
     }
 
     Logger.success('Task successfully saved!')
   })
 }
 
-function detail(parameters)
+function detail(node, parameters)
 {
   let where = {'title': parameters.title}
 
