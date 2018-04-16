@@ -1,12 +1,7 @@
 const _ = require('lodash')
-
-const prefix = [
-  'My lov, we\'ve got a problem!'
-]
-
-const suffix = [
-  'Try it again please xx'
-]
+const Phrasebook = require('../../../config/phrasebook.js'),
+      prefix = Phrasebook.fails.prefix,
+      suffix = Phrasebook.fails.suffix
 
 function text(body)
 {

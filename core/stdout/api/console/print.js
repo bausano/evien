@@ -1,10 +1,11 @@
 function print(response)
 {
   return new Promise((resolve, reject) => {
-    console.group('Response from: ' + response.node.module)
-      console.log(new Date())
-      console.log(response.text)
-    console.groupEnd()
+    //let date = (new Date()).toUTCString()
+    //date = /, (.*?) GMT/g.exec(date)[1]
+
+    console.log('\x1b[1m\x1b[33mEvien\x1b[0m')
+    console.log(response.text)
 
     resolve(true)
   })

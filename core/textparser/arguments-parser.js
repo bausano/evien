@@ -1,6 +1,6 @@
 const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
-const commands = require('../../modules/collector')
+const tree = require('../../modules/collector')
 const Evien = require('../stdout')
 
 /*
@@ -12,7 +12,7 @@ const Evien = require('../stdout')
  */
 function get(route, message, node)
 {
-  let cmds = commands[route.module].functions[route.fnc].arguments
+  let cmds = tree[route.module].functions[route.fnc].arguments
 
   let keys = Object.keys(cmds)
 
@@ -26,23 +26,19 @@ function get(route, message, node)
   if (!_.isNumber(route.args)) {
     return _dispatch(route, message, node)
   } else {
-    if (route.args === 404) {
-      Evien.fails({
-        node: node,
-        body: 'i couldn\'t find or recognize the parameters when I tried to '
-        + commands[route.module].functions[route.fnc].beautify +
-        ' in ' + commands[route.module].beautify
-      })
+    let errors = {
+      404: 'text-parser-cant-recognize-param',
+      417: 'text-parser-required-param-missing'
     }
 
-    if (route.args === 417) {
-      Evien.fails({
-        node: node,
-        body: 'you are missing some important parameter, so I can\'t '
-        + commands[route.module].functions[route.fnc].beautify +
-        ' in ' + commands[route.module].beautify
-      })
-    }
+    Evien.fails({
+      node: node,
+      body: {
+        ref: errors[route.args],
+        args: [
+          tree[route.module].functions[route.fnc].beautify,
+          tree[route.module].beautify]}
+    })
 
     return route.args
   }
@@ -50,7 +46,7 @@ function get(route, message, node)
 
 function _dispatch(route, message, node)
 {
-  let callback = commands[route.module].callback
+  let callback = tree[route.module].callback
 
   // Calls the appropriate function in matched module with exported arguments.
   callback(node, route.fnc, route.args)

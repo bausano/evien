@@ -1,6 +1,6 @@
 const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
-const commands = require('../../modules/collector')
+const tree = require('../../modules/collector')
 const argumentsParser = require('./arguments-parser')
 const Evien = require('../stdout')
 
@@ -23,13 +23,14 @@ function get(route, message, node)
     if (fnc === 404) {
       Evien.fails({
         node: node,
-        body: 'i don\'t understand what should I do with ' + commands[route.module].beautify
+        body: {
+          ref: 'textparser-cant-find-function',
+          args: [tree[route.module].beautify]}
       })
     }
 
     if (fnc === 300) {
       // TODO: If the above fails, Evien asks user to be more specific.
-      console.log('functionParser: 300')
     }
 
     return fnc
@@ -38,7 +39,7 @@ function get(route, message, node)
 
 function _find(route, message)
 {
-  let fncs = KeywordsHelper(commands[route.module].functions, message),
+  let fncs = KeywordsHelper(tree[route.module].functions, message),
       counter = fncs.counter
 
   if (counter[fncs.sorted[0]] === 0) {
@@ -46,6 +47,8 @@ function _find(route, message)
   }
 
   if (counter[fncs.sorted[0]] === counter[fncs.sorted[1]]) {
+    console.log('functionParser: 300')
+    console.log(counter)
     return 300
   }
 

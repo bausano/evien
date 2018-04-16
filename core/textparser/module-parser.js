@@ -1,6 +1,6 @@
 const _ = require('lodash/core')
 const KeywordsHelper = require('./helpers/keywords')
-const commands = require('../../modules/collector')
+const tree = require('../../modules/collector')
 const functionParser = require('./function-parser')
 const Evien = require('../stdout')
 
@@ -22,7 +22,7 @@ function get(message, node)
     if (mod === 404) {
       Evien.fails({
         node: node,
-        body: 'i\'ve got no idea what do you want from me'
+        body: {ref: 'text-parser-cant-find-module'}
       })
     }
 
@@ -37,7 +37,7 @@ function get(message, node)
 
 function _find(message, prev)
 {
-  let modules = KeywordsHelper(commands, message),
+  let modules = KeywordsHelper(tree, message),
       counter = modules.counter
 
   if (counter[modules.sorted[0]] === 0) {

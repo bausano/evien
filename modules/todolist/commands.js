@@ -53,8 +53,7 @@ const commands = {
     printAll: {
       beautify: 'give detail about all tasks',
       keywords: [
-        {word: 'all', bonus: 3},
-        'tag'
+        {word: ' all ', bonus: 3}
       ],
       arguments: {
         tag: {
@@ -67,14 +66,14 @@ const commands = {
       beautify: 'count all tasks',
       keywords: [
         {word: 'many', bonus: 2},
-        'else', 'any', '?', 'are there'
+        ' else ', ' any ', '?', 'are there'
       ],
       arguments: {}
     },
     random: {
       beautify: 'pick a random task',
       keywords: [
-        'one',
+        ' one ',
         {word: 'random', bonus: 3}
       ],
       arguments: {}

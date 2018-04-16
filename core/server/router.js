@@ -14,6 +14,9 @@ router.get('/', (req, res) => {
 })
 
 router.post('/parser', (req, res) => {
+  console.log('\x1b[1m\x1b[34mYou\x1b[0m')
+  console.log(req.body.message)
+
   Node.getLast({
     mins: 5,
     source: req.body.from
